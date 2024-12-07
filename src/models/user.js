@@ -2,19 +2,19 @@
 
  const userSchema= new mongoose.Schema({
     firstName:{
-        type:String
+        type:String,
+        required: true
     },
     lastName:{
         type:String
     },
     emaild:{
-        type:String
+        type:String,
+        required: true,
+        unique: true,
     },
     age:{
         type:Number
-    },
-    gender:{
-        type:String
     }
  })
 const UserModel = mongoose.model("User",userSchema)
