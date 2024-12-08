@@ -1,4 +1,5 @@
- const mongoose=require('mongoose');
+ const { type } = require('express/lib/response');
+const mongoose=require('mongoose');
 
  const userSchema= new mongoose.Schema({
     firstName:{
@@ -14,6 +15,9 @@
         unique: true,
     },
     age:{
+        type:Number
+    },
+    PhoneNumber:{
         type:Number
     }
  })
