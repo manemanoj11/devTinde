@@ -1,36 +1,53 @@
 const express=require("express");
-const connectDB= require("./config/database")
-const app=express()
+const connectDB= require("./config/database")                                               
 const User=require("./models/user")
-
+const {validateSignUp}=require('./utils/validation')
+const app=express()  
+const bcrypt=require('bcrypt')
 
 app.use(express.json());
+app.post("/signup", async (req, res) => {
+    try {
+        validateSignUp(req)
+        const { firstName, lastName, emailId, age, password } = req.body;
+      const passwordHash=await bcrypt.hash(password,10)
+        console.log(passwordHash)
+      const user = new User({
+            firstName,
+            lastName,
+            emailId,
+            age,
+            password:passwordHash
+        });
 
-app.post("/signup",async (req,res)=>{
+        await user.save();
+        res.send("User added successfully");
+    } catch (err) {
+        console.error("Error:", err.message);
+        res.status(400).send("Error saving the user: " + err.message);
+    }
+});
 
-    console.log(req.body)
-    // const userObj={
-    //     fisrtName:"mane",
-    //     lastName:"manoj",
-    //     emailId:"ajdfadf@gmail.com",
-    //     password:"1234563"
-    // }
-    //const user=new User(userObj)
-
-    //else u can write as 
-
-    const user=new User(req.body)
+app.post("/login",async(req,res)=>{
     try{
-        await user.save()
-        //all of this return a promise
-        res.send("user add sucessfully")
-    }
-    catch(err){
-        res.status(400).send("Error saving the user :"+ err.message)
-    }
- 
-})
+    const {emailId,password}=req.body
 
+ const user=await User.findOne({emailId:emailId})
+if(!user){
+ throw new Error("EamilId is not present")
+}   
+const isPasswordValid= bcrypt.compare(password, user.password) 
+
+if(isPasswordValid){
+    res.send("login Done")
+}
+else{
+    throw new Error("password is not correct")
+}
+}catch(err){
+res.status(404).send("ERROR"+err.message)
+}
+})
 
 app.get("/user",async (req,res)=>{
     const userEmail=req.body.emaild;

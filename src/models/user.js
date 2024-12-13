@@ -1,4 +1,3 @@
- const { type } = require('express/lib/response');
 const mongoose=require('mongoose');
 
  const userSchema= new mongoose.Schema({
@@ -7,9 +6,10 @@ const mongoose=require('mongoose');
         required: true
     },
     lastName:{
-        type:String
+        type:String,
+        required:true
     },
-    emaild:{
+    emailId:{
         type:String,
         required: true,
         unique: true,
@@ -17,8 +17,9 @@ const mongoose=require('mongoose');
     age:{
         type:Number
     },
-    PhoneNumber:{
-        type:Number
+     password:{
+        type:String,
+        minlength: [8, "Password must be at least 8 characters long"],
     }
  })
 const UserModel = mongoose.model("User",userSchema)
