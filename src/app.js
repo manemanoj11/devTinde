@@ -35,9 +35,9 @@ app.post("/login",async(req,res)=>{
  const user=await User.findOne({emailId:emailId})
 if(!user){
  throw new Error("EamilId is not present")
-}   
-const isPasswordValid= bcrypt.compare(password, user.password) 
+}  
 
+const isPasswordValid= await bcrypt.compare(password, user.password) 
 if(isPasswordValid){
     res.send("login Done")
 }
