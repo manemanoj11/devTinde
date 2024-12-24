@@ -5,7 +5,7 @@ const { validateSignUp } = require('./utils/validation')
 const app = express()
 const bcrypt = require('bcrypt')
 const cookieParser = require('cookie-parser')
-const jwt = require('jsonwebtoken');
+//const jwt = require('jsonwebtoken');
 const { userAuth } = require("./middlewares/auth");
 
 app.use(express.json());
@@ -42,10 +42,10 @@ app.post("/login", async (req, res) => {
             throw new Error("EamilId is not present")
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password)
+        const isPasswordValid = await user.validatePassword(password)
         if (isPasswordValid) {
 
-            const token = await jwt.sign({ _id: user._id }, "mane")
+            const token = await user.getJWT()
             console.log(token)
             res.cookie('token', token)
             res.send("login Done")
