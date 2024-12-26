@@ -3,7 +3,7 @@ const profileRouter=express.Router()
 const { userAuth } = require("../middlewares/auth");
 const { model } = require('mongoose');
 
-profileRouter.get("/profile",userAuth, async (req, res) => {
+profileRouter.get("/profile/view",userAuth, async (req, res) => {
     try {
         const user = req.user
         console.log(user)
@@ -11,6 +11,10 @@ profileRouter.get("/profile",userAuth, async (req, res) => {
     } catch (err) {
         res.send(err.message)
     }
+})
+
+profileRouter.patch("profile/edit",userAuth,(req,res)=>{
+
 })
 
 module.exports=profileRouter
