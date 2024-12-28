@@ -19,15 +19,6 @@ app.use("/",requestRouter);
 
 app.get("/user", async (req, res) => {
     const userEmail = req.body.emaild;
-    // try{
-    //     const user=await User.findOne({emaild:userEmail})
-    //     if(!user){
-    // res.status(404).send("uesr not found")
-    //     }else{
-    //         console.log(user)
-    //         res.send(user)
-    //     }
-    // }
     try {
         const users = await User.find({ emaild: userEmail });
         if (users.length === 0) {

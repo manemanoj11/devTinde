@@ -1,9 +1,9 @@
-const express=require('express')
-const profileRouter=express.Router()
+const express = require('express')
+const profileRouter = express.Router()
 const { userAuth } = require("../middlewares/auth");
-const { model } = require('mongoose');
+const { validateEditProfileData } = require("../utils/validation")
 
-profileRouter.get("/profile/view",userAuth, async (req, res) => {
+profileRouter.get("/profile/view", userAuth, async (req, res) => {
     try {
         const user = req.user
         console.log(user)
@@ -13,8 +13,22 @@ profileRouter.get("/profile/view",userAuth, async (req, res) => {
     }
 })
 
-profileRouter.patch("profile/edit",userAuth,(req,res)=>{
-
+profileRouter.patch("/profile/edit", userAuth, async(req, res) => {
+    try {
+        if (!validateEditProfileData(req)) {
+            throw new Error("Invalid Edit request")
+        }
+            const loggedInUser=req.user;
+            Object.keys(req.body).forEach((key)=>(loggedInUser[key]=req.body[key]))
+            await loggedInUser.save()
+            res.json({
+                message: `${loggedInUser.firstName}, your profile updated successfully`,
+                data: loggedInUser,
+              });
+        }
+     catch (err) {
+        res.send(err.message)
+    }
 })
 
-module.exports=profileRouter
+module.exports = profileRouter
