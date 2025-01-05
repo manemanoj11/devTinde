@@ -25,6 +25,7 @@ const bcrypt =require('bcrypt')
     }
  })
 
+
 userSchema.methods.getJWT= async function () {
     const user=this
     const token= await jwt.sign({_id:user._id},"mane")
