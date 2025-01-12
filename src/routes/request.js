@@ -17,6 +17,11 @@ requestRouter.post('/request/send/:status/:toUserId', userAuth, async (req, res)
         return res.status(400).json({message:"Invalid status type" +status})
     }
 
+    const toUser = await User.findById(toUserId);
+    if (!toUser) {
+      return res.status(404).json({ message: "User not found!" });
+    }
+
     const existingConnectionRequest=   await ConnectionRequest.findOne({
         $or:[
             {fromUserId,toUserId},
@@ -35,7 +40,7 @@ requestRouter.post('/request/send/:status/:toUserId', userAuth, async (req, res)
 
     const data = await connectionRequest.save()
     res.json({
-        message: 'Request sent successfully',
+        message: req.user.firstName + "is" + status + "in" + toUser,
         data
     })
 }
