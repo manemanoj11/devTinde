@@ -10,7 +10,7 @@ authRouter.post("/signup", async (req, res) => {
         validateSignUp(req)
         const { firstName, lastName, emailId, age, password } = req.body;
         const passwordHash = await bcrypt.hash(password, 10)
-        console.log(passwordHash)
+       // console.log(passwordHash)
         const user = new User({
             firstName,
             lastName,
@@ -40,7 +40,7 @@ authRouter.post("/login", async (req, res) => {
         if (isPasswordValid) {
 
             const token = await user.getJWT()
-            console.log(token)
+           // console.log(token)
             res.cookie('token', token)
             res.send("login Done")
         }
