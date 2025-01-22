@@ -33,15 +33,15 @@ app.get("/user", async (req, res) => {
     }
 })
 
-app.get("/feed", async (req, res) => {
-    try {
-        const users = await User.find({})
-        console.log(users.length)
-        res.send(users)
-    } catch (err) {
-        res.status(404).send("No user available")
-    }
-})
+// app.get("/feed", async (req, res) => {
+//     try {
+//         const users = await User.find({})
+//         console.log(users.length)
+//         res.send(users)
+//     } catch (err) {
+//         res.status(404).send("No user available")
+//     }
+// })
 
 app.delete("/user", async (req, res) => {
     const userId = req.body.userId
