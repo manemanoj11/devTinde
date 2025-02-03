@@ -3,6 +3,7 @@ const userRouter = express.Router()
 const { userAuth } = require('../middlewares/auth')
 const ConnectionRequest = require('../models/connectionRequest')
 const User = require('../models/user')
+const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills";
 
 userRouter.get("/user/requests/received", userAuth, async (req, res) => {
     try {
@@ -12,7 +13,8 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
             status: "interested",
         }).populate(
             "fromUserId",
-            "firstName lastName age"
+            USER_SAFE_DATA
+
         );
         // }).populate("fromUserId", ["firstName", "lastName"]);
         res.json({
@@ -36,10 +38,10 @@ userRouter.get('/user/connections', userAuth, async (req, res) => {
 
         }).populate(
             "fromUserId",
-            "firstName lastName age"
+            USER_SAFE_DATA
         ).populate(
             "toUserId",
-            "firstName lastName age"
+            USER_SAFE_DATA
         )
         const data = connectionRequests.map((row) => {
             if (row.fromUserId._id.toString() == logginedInUser._id.toString()) {
@@ -61,8 +63,9 @@ userRouter.get('/feed', userAuth, async (req, res) => {
 
         const page = parseInt(req.query.page) || 1;
         let limit = parseInt(req.query.limit) || 10;
-            limit=limit > 50 ? 50 : limit
+        limit = limit > 50 ? 50 : limit
         const skip = (page - 1) * limit
+
         const connectionRequests = await ConnectionRequest.find({
             $or: [
                 { fromUserId: loggedInUser.id },
@@ -83,9 +86,9 @@ userRouter.get('/feed', userAuth, async (req, res) => {
                 { _id: { $nin: Array.from(hideUsersFromFeed) } },
                 { _id: { $ne: loggedInUser._id } }
             ],
-        }).select("firstName lastName age").skip(skip).limit(limit)
+        }).select(USER_SAFE_DATA).skip(skip).limit(limit)
 
-        res.send(users)
+        res.json({ data: users })
 
     } catch (err) {
         res.status(404).send("No user available")
