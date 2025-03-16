@@ -1,11 +1,13 @@
 const express = require("express");
 const connectDB = require("./config/database")
-require('dotenv').config()
-const User = require("./models/user")
-
 const app = express()
-const cors= require('cors')
 const cookieParser = require('cookie-parser')
+const cors= require('cors')
+const http=require('http')
+
+require('dotenv').config()
+require('./utils/cronejob')
+
 
 
 app.use(cors({
@@ -18,54 +20,24 @@ app.use(cookieParser())
 const authRouter = require("./routes/auth")
 const profileRouter=require("./routes/profile")
 const requestRouter=require("./routes/request")
-const userRouter=require('./routes/user')
+const userRouter=require('./routes/user');
+const initializeSocket=require('./utils/socket')
+const chatRouter = require("./routes/chat");
 
 app.use("/", authRouter);
 app.use("/",profileRouter);
 app.use("/",requestRouter);
 app.use("/",userRouter);
+app.use('/',chatRouter)
 
-app.get("/user", async (req, res) => {
-    const userEmail = req.body.emaild;
-    try {
-        const users = await User.find({ emaild: userEmail });
-        if (users.length === 0) {
-            res.status(404).send("user data not found")
-        } else {
-            res.send(users)
-        }
-    }
-    catch (err) {
-        res.status(404).send("something went wrong")
-    }
-})
-
-// app.get("/feed", async (req, res) => {
-//     try {
-//         const users = await User.find({})
-//         console.log(users.length)
-//         res.send(users)
-//     } catch (err) {
-//         res.status(404).send("No user available")
-//     }
-// })
-
-app.delete("/user", async (req, res) => {
-    const userId = req.body.userId
-    try {
-        const user = await User.findByIdAndDelete({ _id: userId })
-        res.send("user deleted sucessfully")
-    }
-    catch (err) {
-        res.status(404).send("user not found")
-    }
-})
+const server=http.createServer(app)
+initializeSocket(server)
 
 
 connectDB()
     .then(() => {
         console.log("Database connection established")
-        app.listen(7777, () => {
+        server.listen(process.env.PORT, () => {
             console.log("server is running on port 7777");
         });
     })
